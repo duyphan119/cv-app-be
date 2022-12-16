@@ -54,10 +54,29 @@ class ProductController {
     );
     res.status(status).json(data);
   }
+  async updateProductThumbnail(req: Request, res: Response) {
+    const { data, status }: ResponseData =
+      await productService.updateProductThumbnail(
+        parseInt(req.params.id),
+        req.body.thumbnail
+      );
+    res.status(status).json(data);
+  }
   async updateProduct(req: Request, res: Response) {
     const { data, status }: ResponseData = await productService.updateProduct(
       parseInt(req.params.id),
       req.body
+    );
+    res.status(status).json(data);
+  }
+  async softDeleteProduct(req: Request, res: Response) {
+    const { data, status }: ResponseData =
+      await productService.softDeleteProduct(parseInt(req.params.id));
+    res.status(status).json(data);
+  }
+  async restoreProduct(req: Request, res: Response) {
+    const { data, status }: ResponseData = await productService.restoreProduct(
+      parseInt(req.params.id)
     );
     res.status(status).json(data);
   }

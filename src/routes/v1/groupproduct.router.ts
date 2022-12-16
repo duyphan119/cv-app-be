@@ -14,6 +14,16 @@ router.post(
 router.post("/", requireIsAdmin, groupProductController.createGroupProduct);
 router.patch("/:id", requireIsAdmin, groupProductController.updateGroupProduct);
 router.delete(
+  "/soft/:id",
+  requireIsAdmin,
+  groupProductController.softDeleteGroupProduct
+);
+router.delete(
+  "/restore/:id",
+  requireIsAdmin,
+  groupProductController.restoreGroupProduct
+);
+router.delete(
   "/:id",
   requireIsAdmin,
   groupProductController.deleteGroupProduct

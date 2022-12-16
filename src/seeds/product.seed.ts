@@ -11,6 +11,7 @@ export const productSeed = async () => {
     "https://i.pinimg.com/564x/5a/43/1b/5a431b37c5380e9ef9a9b39318bdc33f.jpg",
     "https://i.pinimg.com/564x/7e/a5/dd/7ea5dd92f9092470066f20a081489527.jpg",
     "https://i.pinimg.com/564x/76/2c/27/762c27c19d3a7db54c0665ac81808c4e.jpg",
+    "https://i.pinimg.com/736x/e5/75/90/e57590ed84b0cd1855c4182ef4822b7e.jpg",
     "https://i.pinimg.com/564x/0c/76/ee/0c76ee06c1f04a638a16ef85ed766782.jpg",
     "https://i.pinimg.com/564x/a9/02/a3/a902a30942944a19ebf6e56d8bc31ad0.jpg",
     "https://i.pinimg.com/564x/cf/7f/57/cf7f5754223b25a9d600ee1f6e2fba4e.jpg",
@@ -27,6 +28,17 @@ export const productSeed = async () => {
     "https://i.pinimg.com/564x/25/7a/3d/257a3d05d1024553a75ec27802a3780d.jpg",
     "https://i.pinimg.com/736x/70/4a/7d/704a7d380e715246419536ef0a4ad621.jpg",
     "https://i.pinimg.com/564x/53/ca/e9/53cae90dfa7a34beac6beb38f4327dac.jpg",
+    "https://i.pinimg.com/564x/73/a1/8a/73a18a0e331899f8d2e79bf284a3e21d.jpg",
+    "https://i.pinimg.com/564x/df/d8/50/dfd850afaf5fd89e4c492cdfb422745b.jpg",
+    "https://i.pinimg.com/564x/55/3b/2c/553b2c6fd756fde64e0bf382de567f9c.jpg",
+    "https://i.pinimg.com/564x/18/ff/9a/18ff9ac323cfe31366e324258ff425b0.jpg",
+    "https://i.pinimg.com/564x/6d/86/4d/6d864d845a18afbd839bafcf814026dc.jpg",
+    "https://i.pinimg.com/564x/9f/9c/dc/9f9cdc021e213b471c3bdfeddba99f2b.jpg",
+    "https://i.pinimg.com/564x/e8/3d/15/e83d159bcd728a06d84b99902379aee6.jpg",
+    "https://i.pinimg.com/564x/e5/2d/c0/e52dc03db31e7df5ac5fff89c25e6365.jpg",
+    "https://i.pinimg.com/564x/64/91/fd/6491fd5476e15e1b3275b549a3eaba77.jpg",
+    "https://i.pinimg.com/564x/32/d3/5b/32d35beb51b8dbc537f238c2cdc82d42.jpg",
+    "https://i.pinimg.com/564x/b7/da/88/b7da88ad284dce3b37e706f2e63c5aad.jpg",
   ];
   // await AppDataSource.createQueryBuilder()
   //   .update(Product)
@@ -71,6 +83,8 @@ export const productSeed = async () => {
         slug: slugify(`Mặt hàng ${index + 1}`, { lower: true }),
         groupProductId: (index % 7) + 1,
         thumbnail: imgs[index % imgs.length] || imgs[0],
+        price: 200000 + index * 10000,
+        quantity: 20,
       }))
     );
   }

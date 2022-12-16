@@ -39,7 +39,6 @@ class AuthController {
         sameSite: "lax",
         domain: __prod__ ? ".vercel.app" : undefined,
       });
-      console.log({ ...data, data: others });
       return res.status(status).json({ ...data, data: others });
     }
 

@@ -4,6 +4,8 @@ import { Product } from "../entities/product.entity";
 import { handleError, handleItem, handleItems } from "../utils";
 import { QueryParams, ResponseData } from "../utils/types";
 import { CreateGroupProductDTO } from "../dtos/creategroupproduct.dto";
+import slugify from "slugify";
+import { AppDataSource } from "../data-source";
 
 export type GroupProductQueryParams = {
   name?: string;
@@ -14,15 +16,16 @@ export const getAllGroupProducts = async (
   query: GroupProductQueryParams
 ): Promise<ResponseData> => {
   try {
-    const { sort_by, sort_type, name, slug } = query;
+    const { sort_by, sort_type, name, slug, withDeleted } = query;
     const take: number = query.limit ? parseInt(query.limit) : -1;
     const skip: number =
       take !== -1 && query.p ? (parseInt(query.p) - 1) * take : -1;
 
     const products = await GroupProduct.find({
       order: {
-        [sort_by || "createdAt"]: sort_type || "desc",
+        [sort_by || "id"]: sort_type || "desc",
       },
+      withDeleted: withDeleted ? true : false,
       where: { ...(name ? { name } : {}), ...(slug ? { slug } : {}) },
       ...(take !== -1 ? { take } : {}),
       ...(skip !== -1 ? { skip } : {}),
@@ -52,8 +55,16 @@ export const createGroupProduct = async (
   body: CreateGroupProductDTO
 ): Promise<ResponseData> => {
   try {
+    const { name } = body;
+    let slug =
+      body.slug ||
+      slugify(name, {
+        trim: true,
+        locale: "vi",
+        lower: true,
+      });
     const groupProduct = await GroupProduct.save(
-      Object.assign(new Product(), body)
+      Object.assign(new GroupProduct(), { ...body, slug })
     );
     return handleItem(STATUS_CREATED, groupProduct);
   } catch (error) {
@@ -83,6 +94,28 @@ export const updateGroupProduct = async (
     if (groupProduct)
       groupProduct = await GroupProduct.save(Object.assign(groupProduct, body));
     return handleItem(STATUS_OK, groupProduct);
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const softDeleteGroupProduct = async (
+  id: number
+): Promise<ResponseData> => {
+  try {
+    await AppDataSource.getRepository(GroupProduct).softDelete({ id });
+    return handleItem(STATUS_OK);
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+export const restoreGroupProduct = async (
+  id: number
+): Promise<ResponseData> => {
+  try {
+    await AppDataSource.getRepository(GroupProduct).restore({ id });
+    return handleItem(STATUS_OK);
   } catch (error) {
     return handleError(error);
   }

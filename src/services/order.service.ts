@@ -54,9 +54,11 @@ export const userOrders = async (
       where: { userId },
       relations: {
         items: {
+          product: true,
           productVariant: {
-            product: true,
-            variants: true,
+            variantValues: {
+              variant: true,
+            },
           },
         },
       },
@@ -79,9 +81,14 @@ export const getCart = async (userId: number): Promise<ResponseData> => {
       },
       relations: {
         items: {
+          product: true,
           productVariant: {
-            product: true,
-            variants: true,
+            product: {
+              images: true,
+            },
+            variantValues: {
+              variant: true,
+            },
           },
         },
       },
@@ -92,13 +99,10 @@ export const getCart = async (userId: number): Promise<ResponseData> => {
   }
 };
 
-export const deleteCartItem = async (
-  userId: number,
-  productVariantId: number
-): Promise<ResponseData> => {
+export const deleteCartItem = async (id: number): Promise<ResponseData> => {
   try {
     const orderItem = await OrderItem.findOne({
-      where: { order: { userId }, productVariantId },
+      where: { id },
     });
     if (orderItem) {
       await OrderItem.delete({
@@ -113,22 +117,17 @@ export const deleteCartItem = async (
 };
 
 export const updateCartItem = async (
-  userId: number,
-  productVariantId: number,
+  id: number,
   newQuantity: number
 ): Promise<ResponseData> => {
   try {
     const orderItem = await OrderItem.findOne({
-      where: { order: { userId }, productVariantId },
+      where: { id },
     });
     if (orderItem) {
-      await OrderItem.update(
-        { id: orderItem.id },
-        {
-          quantity: newQuantity,
-        }
-      );
-      return handleItem(200);
+      orderItem.quantity = newQuantity;
+      await OrderItem.save(orderItem);
+      return handleItem(200, await OrderItem.save(orderItem));
     }
     return handleItem(401);
   } catch (error) {
@@ -160,13 +159,22 @@ export const createCartItem = async (
       return handleItem(
         201,
         await OrderItem.save({
-          productVariantId: body.productVariantId,
-          quantity: body.quantity,
+          ...(body.productVariantId
+            ? { productVariantId: body.productVariantId }
+            : {}),
+          productId: body.productId,
           orderId: existingCart.id,
+          quantity: body.quantity,
         })
       );
     }
     return handleItem(404);
+  } catch (error) {
+    return handleError(error);
+  }
+};
+export const getShippingPrice = () => {
+  try {
   } catch (error) {
     return handleError(error);
   }

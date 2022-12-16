@@ -14,6 +14,7 @@ import { productVariantSeed } from "./seeds/productvariant.seed";
 import { productVariantImageSeed } from "./seeds/productvariantimage.seed";
 import { userSeed } from "./seeds/user.seed";
 import { variantSeed } from "./seeds/variant.seed";
+import { variantValueSeed } from "./seeds/variantvalue.seed";
 let PORT = "8080";
 if (process.env.PORT) {
   PORT = process.env.PORT;
@@ -39,6 +40,7 @@ AppDataSource.initialize()
 
     await userSeed();
     await variantSeed();
+    await variantValueSeed();
     await groupProductSeed();
     await productSeed();
     await productVariantSeed();

@@ -40,9 +40,7 @@ export const signRefreshToken = (obj: any, expiresIn: number): string => {
 export const register = async (body: RegisterDTO): Promise<ResponseData> => {
   const { email, fullName, password } = body;
   try {
-    const userRepository = AppDataSource.getRepository(User);
-
-    const existingUser = await userRepository.findOne({
+    const existingUser = await User.findOne({
       where: {
         email,
       },
@@ -56,12 +54,9 @@ export const register = async (body: RegisterDTO): Promise<ResponseData> => {
 
     const hashedPassword = await hash(password);
 
-    const newUser = new User();
-    newUser.email = email;
-    newUser.fullName = fullName;
-    newUser.password = hashedPassword;
-
-    const savedUser = await userRepository.save(newUser);
+    const savedUser = await User.save(
+      Object.assign(new User(), { ...body, password: hashedPassword })
+    );
     const { password: _password, ...others } = savedUser;
 
     const obj: any = { id: others.id, isAdmin: others.isAdmin };
@@ -82,9 +77,7 @@ export const register = async (body: RegisterDTO): Promise<ResponseData> => {
 export const login = async (body: LoginDTO): Promise<ResponseData> => {
   const { email, password } = body;
   try {
-    const userRepository = AppDataSource.getRepository(User);
-
-    const existingUser = await userRepository.findOne({
+    const existingUser = await User.findOne({
       where: {
         email,
       },
@@ -143,9 +136,7 @@ export const checkEmail = async (
   query: CheckEmailInput
 ): Promise<ResponseData> => {
   try {
-    const userRepository = AppDataSource.getRepository(User);
-
-    const existingUser = await userRepository.findOneBy({
+    const existingUser = await User.findOneBy({
       email: query.email,
     });
     if (existingUser) {
@@ -183,9 +174,7 @@ export const getResetCode = async (
   body: GetResetCodeInput
 ): Promise<ResponseData> => {
   try {
-    const userRepository = AppDataSource.getRepository(User);
-
-    const existingUser = await userRepository.findOneBy({
+    const existingUser = await User.findOneBy({
       email: body.email,
     });
     if (existingUser) {
@@ -262,9 +251,7 @@ export const resetPassword = async (
   try {
     const comparedResetCode = await bcrypt.compare(body.code, resetCode.code);
     if (comparedResetCode && resetCode.isVerified) {
-      const userRepository = AppDataSource.getRepository(User);
-
-      const existingUser = await userRepository.findOneBy({
+      const existingUser = await User.findOneBy({
         email: resetCode.email,
       });
 
@@ -273,7 +260,7 @@ export const resetPassword = async (
 
         existingUser.password = hashedPassword;
 
-        await userRepository.save(existingUser);
+        await User.save(existingUser);
 
         return {
           status: 200,

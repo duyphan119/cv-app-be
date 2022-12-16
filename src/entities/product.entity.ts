@@ -1,8 +1,9 @@
-import { IsString } from "class-validator";
+import { IsNumber, IsString } from "class-validator";
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -12,6 +13,7 @@ import {
 } from "typeorm";
 import { FavoriteProduct } from "./favoriteproduct.entity";
 import { GroupProduct } from "./groupproduct.entity";
+import { OrderItem } from "./orderitem.entity";
 import { ProductVariant } from "./productvariant.entity";
 import { ProductVariantImage } from "./productvariantimage.entity";
 
@@ -33,8 +35,10 @@ export class Product extends BaseEntity {
   thumbnail: string;
 
   @Column({ nullable: true, name: "mota" })
-  @IsString()
   description: string;
+
+  @Column({ nullable: true, name: "chitiet", type: "text" })
+  detail: string;
 
   @Column({ default: 1, name: "manhomsanpham" })
   @IsString()
@@ -42,6 +46,14 @@ export class Product extends BaseEntity {
 
   @OneToMany(() => ProductVariant, (e) => e.product)
   productVariants: ProductVariant[];
+
+  @Column({ default: 0, name: "solongton" })
+  @IsNumber()
+  inventory: number;
+
+  @Column({ nullable: false, name: "giaban", default: 40000 })
+  @IsNumber()
+  price: number;
 
   @CreateDateColumn({ name: "ngaytao" })
   createdAt: Date;
@@ -52,10 +64,19 @@ export class Product extends BaseEntity {
   @OneToMany(() => ProductVariantImage, (e) => e.product)
   images: ProductVariantImage[];
 
+  @OneToMany(() => OrderItem, (e) => e.product)
+  items: OrderItem[];
+
   @ManyToOne(() => GroupProduct, (e) => e.products)
   @JoinColumn({ name: "manhomsanpham", referencedColumnName: "id" })
   groupProduct: GroupProduct;
 
   @OneToMany(() => FavoriteProduct, (e) => e.product)
   favorites: FavoriteProduct[];
+
+  @Column({ name: "hienthi", default: true })
+  isVisible: boolean;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

@@ -3,6 +3,7 @@ import {
   BaseEntity,
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -39,4 +40,7 @@ export class GroupProduct extends BaseEntity {
 
   @UpdateDateColumn({ name: "ngaycapnhat" })
   updatedAt: Date;
+
+  @DeleteDateColumn({ name: "ngayxoa" })
+  deletedAt?: Date;
 }

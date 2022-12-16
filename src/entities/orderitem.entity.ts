@@ -13,6 +13,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Order } from "./order.entity";
+import { Product } from "./product.entity";
 import { ProductVariant } from "./productvariant.entity";
 
 @Entity({ name: "chitietdonhang" })
@@ -24,7 +25,11 @@ export class OrderItem extends BaseEntity {
   @IsNumber()
   orderId: number;
 
-  @Column({ nullable: false, name: "mahangbienthe" })
+  @Column({ nullable: false, name: "mahang" })
+  @IsNumber()
+  productId: number;
+
+  @Column({ nullable: true, name: "mahangbienthe" })
   @IsNumber()
   productVariantId: number;
 
@@ -42,6 +47,10 @@ export class OrderItem extends BaseEntity {
 
   @UpdateDateColumn({ name: "ngaycapnhat" })
   updatedAt: Date;
+
+  @ManyToOne(() => Product, (e) => e.items)
+  @JoinColumn({ name: "mahang", referencedColumnName: "id" })
+  product: Product;
 
   @ManyToOne(() => ProductVariant, (e) => e.items)
   @JoinColumn({ name: "mahangbienthe", referencedColumnName: "id" })
@@ -67,26 +76,38 @@ export class OrderItemSubscriber
       // }
       const existingOrderItem = await OrderItem.findOne({
         where: {
+          productId: event.entity.productId,
           productVariantId: event.entity.productVariantId,
           orderId: event.entity.orderId,
         },
-        relations: { productVariant: true },
+        relations: { product: true },
       });
       if (existingOrderItem) {
         event.entity.id = existingOrderItem.id;
         event.entity.createdAt = existingOrderItem.createdAt;
         event.entity.updatedAt = existingOrderItem.updatedAt;
         event.entity.quantity += existingOrderItem.quantity;
-        event.entity.price = existingOrderItem.productVariant.price;
+        event.entity.price = existingOrderItem.productVariant
+          ? existingOrderItem.productVariant.price
+          : existingOrderItem.product
+          ? existingOrderItem.product.price
+          : 0;
         event.entity.updatedAt = new Date();
         await OrderItem.delete({
           id: existingOrderItem.id,
         });
       } else {
-        const productVariant = await ProductVariant.findOneBy({
-          id: event.entity.productVariantId,
-        });
-        if (productVariant) event.entity.price = productVariant.price;
+        if (event.entity.productVariantId) {
+          const productVariant = await ProductVariant.findOneBy({
+            id: event.entity.productVariantId,
+          });
+          if (productVariant) event.entity.price = productVariant.price;
+        } else {
+          const product = await Product.findOneBy({
+            id: event.entity.productId,
+          });
+          if (product) event.entity.price = product.price;
+        }
       }
     } catch (error) {
       console.log(error);

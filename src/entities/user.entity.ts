@@ -1,4 +1,4 @@
-import { IsBoolean, IsEmail, IsString } from "class-validator";
+import { IsBoolean, IsEmail, IsNumber, IsString, Min } from "class-validator";
 import {
   BaseEntity,
   Column,
@@ -30,6 +30,11 @@ export class User extends BaseEntity {
   @Column({ nullable: false, length: 10, name: "sdt" })
   @IsString()
   phone: string;
+
+  @Column({ default: 0, name: "diem" })
+  @IsNumber()
+  @Min(0)
+  point: number;
 
   @Column({ default: false, name: "quyen" })
   @IsBoolean()

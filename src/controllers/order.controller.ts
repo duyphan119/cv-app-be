@@ -18,16 +18,14 @@ class OrderController {
   }
   async updateCartItem(req: Request, res: Response) {
     const { data, status }: ResponseData = await orderService.updateCartItem(
-      +res.locals.user.id,
-      +req.params.productVariantId,
+      +req.params.id,
       req.body.newQuantity
     );
     res.status(status).json(data);
   }
   async deleteCartItem(req: Request, res: Response) {
     const { data, status }: ResponseData = await orderService.deleteCartItem(
-      +res.locals.user.id,
-      +req.params.productVariantId
+      +req.params.id
     );
     res.status(status).json(data);
   }

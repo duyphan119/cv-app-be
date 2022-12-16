@@ -10,7 +10,8 @@ export type PaginationParams = {
   p?: string;
   limit?: string;
 };
-export type QueryParams = SortParams & PaginationParams;
+export type QueryParams = { withDeleted?: string } & SortParams &
+  PaginationParams;
 export type ParsedQueryParams = {
   sort_by?: string;
   sort_type?: string;

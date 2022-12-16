@@ -16,6 +16,7 @@ import { OrderItem } from "./orderitem.entity";
 import { Product } from "./product.entity";
 import { ProductVariantImage } from "./productvariantimage.entity";
 import { Variant } from "./variant.entity";
+import { VariantValue } from "./variantvalue.entity";
 
 @Entity({ name: "mathangbienthe" })
 export class ProductVariant extends BaseEntity {
@@ -44,9 +45,9 @@ export class ProductVariant extends BaseEntity {
   @UpdateDateColumn({ name: "ngaycapnhat" })
   updatedAt: Date;
 
-  @ManyToMany(() => Variant, (e) => e.productVariants)
-  @JoinTable({ name: "mathangbienthe_bienthe" })
-  variants: Variant[];
+  @ManyToMany(() => VariantValue, (e) => e.productVariants)
+  @JoinTable({ name: "mathangbienthe_giatribienthe" })
+  variantValues: VariantValue[];
 
   @ManyToOne(() => Product, (e) => e.productVariants)
   @JoinColumn({ name: "mahang", referencedColumnName: "id" })

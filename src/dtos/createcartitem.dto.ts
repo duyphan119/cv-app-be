@@ -1,4 +1,5 @@
 export type CreateCartItemDTO = {
-  productVariantId: number;
+  productVariantId?: number;
   quantity: number;
+  productId: number;
 };

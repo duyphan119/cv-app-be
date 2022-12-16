@@ -36,6 +36,16 @@ class GroupProductController {
       await groupProductService.deleteGroupProduct(parseInt(req.params.id));
     res.status(status).json(data);
   }
+  async softDeleteGroupProduct(req: Request, res: Response) {
+    const { data, status }: ResponseData =
+      await groupProductService.softDeleteGroupProduct(parseInt(req.params.id));
+    res.status(status).json(data);
+  }
+  async restoreGroupProduct(req: Request, res: Response) {
+    const { data, status }: ResponseData =
+      await groupProductService.restoreGroupProduct(parseInt(req.params.id));
+    res.status(status).json(data);
+  }
   async deleteGroupProducts(req: Request, res: Response) {
     const { data, status }: ResponseData =
       await groupProductService.deleteGroupProducts(req.body);

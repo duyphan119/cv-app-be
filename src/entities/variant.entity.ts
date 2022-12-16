@@ -12,6 +12,7 @@ import {
 } from "typeorm";
 import { ProductVariant } from "./productvariant.entity";
 import { ProductVariantImage } from "./productvariantimage.entity";
+import { VariantValue } from "./variantvalue.entity";
 
 @Entity({ name: "bienthe" })
 export class Variant extends BaseEntity {
@@ -22,20 +23,15 @@ export class Variant extends BaseEntity {
   @IsString()
   name: string;
 
-  @Column({ nullable: false, name: "loaibt" })
-  @IsString()
-  type: string;
-
   @CreateDateColumn({ name: "ngaytao" })
   createdAt: Date;
 
   @UpdateDateColumn({ name: "ngaycapnhat" })
   updatedAt: Date;
 
-  @ManyToMany(() => ProductVariant, (e) => e.variants)
-  @JoinTable({ name: "mathangbienthe_bienthe" })
-  productVariants: ProductVariant[];
+  @OneToMany(() => VariantValue, (e) => e.variant)
+  variantValues: VariantValue[];
 
-  @OneToMany(() => ProductVariantImage, (e) => e.variant)
-  images: ProductVariantImage[];
+  // @OneToMany(() => ProductVariantImage, (e) => e.variant)
+  // images: ProductVariantImage[];
 }

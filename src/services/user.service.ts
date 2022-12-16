@@ -2,6 +2,7 @@ import { User } from "../entities/user.entity";
 import { AppDataSource } from "../data-source";
 import { ResponseData } from "../utils/types";
 import { UsersQueryParams } from "../types/user";
+import { handleError, handleItem } from "../utils";
 
 export const getAllUsers = async (
   query: UsersQueryParams
@@ -15,7 +16,7 @@ export const getAllUsers = async (
 
     const users = await userRepository.find({
       order: {
-        [sort_by || "createdAt"]: sort_type || "desc",
+        [sort_by || "id"]: sort_type || "desc",
       },
       take,
       skip,
@@ -82,32 +83,14 @@ export const getUserById = async (id: number): Promise<ResponseData> => {
 
     const existingUser = await userRepository.findOne({
       where: { id },
-      select: {
-        password: false,
-      },
     });
 
     if (existingUser) {
-      return {
-        status: 200,
-        data: existingUser,
-      };
+      return handleItem(200, existingUser);
     }
 
-    return {
-      status: 200,
-      data: {
-        user: null,
-      },
-    };
+    return handleItem(204);
   } catch (error) {
-    console.log(error);
-    return {
-      status: 500,
-      data: {
-        message: `Something's wrong`,
-        error,
-      },
-    };
+    return handleError(error);
   }
 };

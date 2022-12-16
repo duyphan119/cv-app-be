@@ -8,6 +8,7 @@ import { ProductVariant } from "./productvariant.entity";
 import { ProductVariantImage } from "./productvariantimage.entity";
 import { User } from "./user.entity";
 import { Variant } from "./variant.entity";
+import { VariantValue } from "./variantvalue.entity";
 
 const entities = [
   User,
@@ -20,6 +21,7 @@ const entities = [
   GroupProduct,
   FavoriteProduct,
   OrderItem,
+  VariantValue,
 ];
 
 export const subscribers = [OrderItemSubscriber, OrderSubscriber];

@@ -26,17 +26,16 @@ export class ProductVariantImage extends BaseEntity {
   @IsNumber()
   productId: number;
 
-  @Column({ name: "mabienthe" })
-  @IsNumber()
-  variantId: number;
+  @Column({ name: "magiatribienthe", nullable: true })
+  variantValueId: number;
 
   @ManyToOne(() => Product, (e) => e.images)
   @JoinColumn({ name: "mahang", referencedColumnName: "id" })
   product: Product;
 
-  @ManyToOne(() => Variant, (e) => e.images)
-  @JoinColumn({ name: "mabienthe", referencedColumnName: "id" })
-  variant: Variant;
+  // @ManyToOne(() => Variant, (e) => e.images)
+  // @JoinColumn({ name: "mabienthe", referencedColumnName: "id" })
+  // variant: Variant;
 
   @CreateDateColumn({ name: "ngaytao" })
   createdAt: Date;

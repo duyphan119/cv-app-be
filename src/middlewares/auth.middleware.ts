@@ -64,6 +64,9 @@ export const requireIsUser: any = (
   res: Response,
   next: NextFunction
 ) => {
+  console.log(
+    "---------------------------------Require is user ----------------------------"
+  );
   requireLogin(req, res, () => {
     if (!res.locals.user.isAdmin) {
       next();

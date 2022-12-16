@@ -5,26 +5,35 @@ import { Variant } from "../entities/variant.entity";
 import { handleError, handleItems, handleItem } from "../utils";
 import { QueryParams, ResponseData } from "../utils/types";
 
+export type VariantQueryParams = {
+  name?: string;
+  variant_values?: string;
+} & QueryParams;
+
 export const getAllVariants = async (
-  query: QueryParams
+  query: VariantQueryParams
 ): Promise<ResponseData> => {
   try {
-    const { sort_by, sort_type } = query;
+    const { sort_by, sort_type, name, variant_values } = query;
     const variantRepository = AppDataSource.getRepository(Variant);
 
     const take: number = query.limit ? parseInt(query.limit) : -1;
     const skip: number =
       take !== -1 && query.p ? (parseInt(query.p) - 1) * take : -1;
-
-    const variants = await variantRepository.find({
+    const [variants, count] = await variantRepository.findAndCount({
       order: {
-        [sort_by || "createdAt"]: sort_type || "desc",
+        [sort_by || "id"]: sort_type || "desc",
+      },
+      where: {
+        ...(name ? { name } : {}),
+      },
+      relations: {
+        ...(variant_values ? { variantValues: true } : {}),
       },
       ...(take !== -1 ? { take } : {}),
       ...(skip !== -1 ? { skip } : {}),
     });
 
-    const count = await variantRepository.count();
     return handleItems(STATUS_OK, variants, count, take);
   } catch (error) {
     return handleError(error);
