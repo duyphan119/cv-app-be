@@ -14,15 +14,14 @@ export const getAllVariants = async (
   query: VariantQueryParams
 ): Promise<ResponseData> => {
   try {
-    const { sort_by, sort_type, name, variant_values } = query;
+    const { sortBy, sortType, name, variant_values } = query;
     const variantRepository = AppDataSource.getRepository(Variant);
 
-    const take: number = query.limit ? parseInt(query.limit) : -1;
-    const skip: number =
-      take !== -1 && query.p ? (parseInt(query.p) - 1) * take : -1;
+    const take: number = query.limit ? +query.limit : -1;
+    const skip: number = take !== -1 && query.p ? (+query.p - 1) * take : -1;
     const [variants, count] = await variantRepository.findAndCount({
       order: {
-        [sort_by || "id"]: sort_type || "desc",
+        [sortBy || "id"]: sortType || "desc",
       },
       where: {
         ...(name ? { name } : {}),

@@ -11,7 +11,7 @@ class VariantController {
   }
   async getVariantById(req: Request, res: Response) {
     const { data, status }: ResponseData = await variantService.getVariantById(
-      parseInt(req.params.id)
+      +req.params.id
     );
     res.status(status).json(data);
   }
@@ -29,14 +29,14 @@ class VariantController {
   }
   async updateVariant(req: Request, res: Response) {
     const { data, status }: ResponseData = await variantService.updateVariant(
-      parseInt(req.params.id),
+      +req.params.id,
       req.body
     );
     res.status(status).json(data);
   }
   async deleteVariant(req: Request, res: Response) {
     const { data, status }: ResponseData = await variantService.deleteVariant(
-      parseInt(req.params.id)
+      +req.params.id
     );
     res.status(status).json(data);
   }

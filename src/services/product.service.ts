@@ -63,8 +63,8 @@ export const getAllProducts = async (
 ): Promise<ResponseData> => {
   try {
     const {
-      sort_by,
-      sort_type,
+      sortBy,
+      sortType,
       name,
       slug,
       group_product_slug,
@@ -75,15 +75,12 @@ export const getAllProducts = async (
       images,
       withDeleted,
     } = query;
-    const take: number = query.limit ? parseInt(query.limit) : -1;
-    const skip: number =
-      take !== -1 && query.p ? (parseInt(query.p) - 1) * take : -1;
+    const take: number = query.limit ? +query.limit : -1;
+    const skip: number = take !== -1 && query.p ? (+query.p - 1) * take : -1;
     let [products, count] = await Product.findAndCount({
       withDeleted: withDeleted ? true : false,
       order: {
-        ...(sort_by !== "price"
-          ? { [sort_by || "id"]: sort_type || "desc" }
-          : {}),
+        ...(sortBy !== "price" ? { [sortBy || "id"]: sortType || "desc" } : {}),
       },
       relations: {
         ...(slug ? { images: true } : {}),
@@ -132,10 +129,12 @@ export const getAllProducts = async (
         minPrice: price(product, "min"),
         maxPrice: price(product, "max"),
       })) as any;
-      products.sort(
-        (a: any, b: any) =>
-          (a.minPrice - b.minPrice) * (sort_type === "asc" ? 1 : -1)
-      );
+
+      if (sortBy && sortBy === "price")
+        products.sort(
+          (a: any, b: any) =>
+            (a.minPrice - b.minPrice) * (sortType === "asc" ? 1 : -1)
+        );
     }
     return handleItems(STATUS_OK, products, count, take);
   } catch (error) {
@@ -163,10 +162,9 @@ export const createFavoriteProduct = async (
 export const search = async (
   query: SearchProductQueryParams
 ): Promise<ResponseData> => {
-  const { sort_by, sort_type, q, product_variants, images } = query;
-  const take: number = query.limit ? parseInt(query.limit) : -1;
-  const skip: number =
-    take !== -1 && query.p ? (parseInt(query.p) - 1) * take : -1;
+  const { sortBy, sortType, q, product_variants, images } = query;
+  const take: number = query.limit ? +query.limit : -1;
+  const skip: number = take !== -1 && query.p ? (+query.p - 1) * take : -1;
   try {
     const where: any = {};
 
@@ -184,7 +182,7 @@ export const search = async (
     let listId = productVariants.map((pv: ProductVariant) => pv.productId);
     let products: any = await Product.find({
       order: {
-        [sort_by || "id"]: sort_type || "desc",
+        [sortBy || "id"]: sortType || "desc",
       },
       relations: {
         ...(product_variants
@@ -239,9 +237,8 @@ export const getFavoriteProducts = async (
 ): Promise<ResponseData> => {
   try {
     const { product_variants, images } = query;
-    const take: number = query.limit ? parseInt(query.limit) : -1;
-    const skip: number =
-      take !== -1 && query.p ? (parseInt(query.p) - 1) * take : -1;
+    const take: number = query.limit ? +query.limit : -1;
+    const skip: number = take !== -1 && query.p ? (+query.p - 1) * take : -1;
     const [favoriteList, count] = await FavoriteProduct.findAndCount({
       where: { userId },
       relations: {

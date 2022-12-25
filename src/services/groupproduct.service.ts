@@ -16,14 +16,13 @@ export const getAllGroupProducts = async (
   query: GroupProductQueryParams
 ): Promise<ResponseData> => {
   try {
-    const { sort_by, sort_type, name, slug, withDeleted } = query;
-    const take: number = query.limit ? parseInt(query.limit) : -1;
-    const skip: number =
-      take !== -1 && query.p ? (parseInt(query.p) - 1) * take : -1;
+    const { sortBy, sortType, name, slug, withDeleted } = query;
+    const take: number = query.limit ? +query.limit : -1;
+    const skip: number = take !== -1 && query.p ? (+query.p - 1) * take : -1;
 
     const products = await GroupProduct.find({
       order: {
-        [sort_by || "id"]: sort_type || "desc",
+        [sortBy || "id"]: sortType || "desc",
       },
       withDeleted: withDeleted ? true : false,
       where: { ...(name ? { name } : {}), ...(slug ? { slug } : {}) },

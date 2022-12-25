@@ -9,6 +9,7 @@ import { __prod__ } from "./constants";
 import { AppDataSource } from "./data-source";
 import routes from "./routes";
 import { groupProductSeed } from "./seeds/groupproduct.seed";
+import { orderDiscountSeed } from "./seeds/orderdiscount.seed";
 import { productSeed } from "./seeds/product.seed";
 import { productVariantSeed } from "./seeds/productvariant.seed";
 import { productVariantImageSeed } from "./seeds/productvariantimage.seed";
@@ -45,6 +46,7 @@ AppDataSource.initialize()
     await productSeed();
     await productVariantSeed();
     await productVariantImageSeed();
+    await orderDiscountSeed();
 
     app.use(routes);
     app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`));

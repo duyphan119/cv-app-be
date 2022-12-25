@@ -3,8 +3,8 @@ export type ResponseData = {
   data?: any;
 };
 export type SortParams = {
-  sort_by?: string;
-  sort_type?: string;
+  sortBy?: string;
+  sortType?: string;
 };
 export type PaginationParams = {
   p?: string;
@@ -13,8 +13,8 @@ export type PaginationParams = {
 export type QueryParams = { withDeleted?: string } & SortParams &
   PaginationParams;
 export type ParsedQueryParams = {
-  sort_by?: string;
-  sort_type?: string;
+  sortBy?: string;
+  sortType?: string;
   p?: number;
   limit?: number;
   select?: string;

@@ -38,7 +38,7 @@ class ProductController {
   }
   async getProductById(req: Request, res: Response) {
     const { data, status }: ResponseData = await productService.getProductById(
-      parseInt(req.params.id)
+      +req.params.id
     );
     res.status(status).json(data);
   }
@@ -57,32 +57,32 @@ class ProductController {
   async updateProductThumbnail(req: Request, res: Response) {
     const { data, status }: ResponseData =
       await productService.updateProductThumbnail(
-        parseInt(req.params.id),
+        +req.params.id,
         req.body.thumbnail
       );
     res.status(status).json(data);
   }
   async updateProduct(req: Request, res: Response) {
     const { data, status }: ResponseData = await productService.updateProduct(
-      parseInt(req.params.id),
+      +req.params.id,
       req.body
     );
     res.status(status).json(data);
   }
   async softDeleteProduct(req: Request, res: Response) {
     const { data, status }: ResponseData =
-      await productService.softDeleteProduct(parseInt(req.params.id));
+      await productService.softDeleteProduct(+req.params.id);
     res.status(status).json(data);
   }
   async restoreProduct(req: Request, res: Response) {
     const { data, status }: ResponseData = await productService.restoreProduct(
-      parseInt(req.params.id)
+      +req.params.id
     );
     res.status(status).json(data);
   }
   async deleteProduct(req: Request, res: Response) {
     const { data, status }: ResponseData = await productService.deleteProduct(
-      parseInt(req.params.id)
+      +req.params.id
     );
     res.status(status).json(data);
   }

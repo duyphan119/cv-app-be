@@ -3,6 +3,25 @@ import { ResponseData } from "../utils/types";
 import * as orderService from "../services/order.service";
 
 class OrderController {
+  async getAllOrders(req: Request, res: Response) {
+    const { data, status }: ResponseData = await orderService.getAllOrders(
+      req.query
+    );
+    res.status(status).json(data);
+  }
+  async getOrderById(req: Request, res: Response) {
+    const { data, status }: ResponseData = await orderService.getOrderById(
+      +req.params.id
+    );
+    res.status(status).json(data);
+  }
+  async updateStatus(req: Request, res: Response) {
+    const { data, status }: ResponseData = await orderService.updateStatus(
+      +req.params.id,
+      req.body.status
+    );
+    res.status(status).json(data);
+  }
   async createCartItem(req: Request, res: Response) {
     const { data, status }: ResponseData = await orderService.createCartItem(
       +res.locals.user.id,
@@ -36,8 +55,8 @@ class OrderController {
     );
     res.status(status).json(data);
   }
-  async userOrders(req: Request, res: Response) {
-    const { data, status }: ResponseData = await orderService.userOrders(
+  async getOrdersByUserId(req: Request, res: Response) {
+    const { data, status }: ResponseData = await orderService.getOrdersByUserId(
       +res.locals.user.id,
       req.query
     );

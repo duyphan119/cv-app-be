@@ -10,7 +10,7 @@ class GroupProductController {
   }
   async getGroupProductById(req: Request, res: Response) {
     const { data, status }: ResponseData =
-      await groupProductService.getGroupProductById(parseInt(req.params.id));
+      await groupProductService.getGroupProductById(+req.params.id);
     res.status(status).json(data);
   }
   async createGroupProduct(req: Request, res: Response) {
@@ -25,25 +25,22 @@ class GroupProductController {
   }
   async updateGroupProduct(req: Request, res: Response) {
     const { data, status }: ResponseData =
-      await groupProductService.updateGroupProduct(
-        parseInt(req.params.id),
-        req.body
-      );
+      await groupProductService.updateGroupProduct(+req.params.id, req.body);
     res.status(status).json(data);
   }
   async deleteGroupProduct(req: Request, res: Response) {
     const { data, status }: ResponseData =
-      await groupProductService.deleteGroupProduct(parseInt(req.params.id));
+      await groupProductService.deleteGroupProduct(+req.params.id);
     res.status(status).json(data);
   }
   async softDeleteGroupProduct(req: Request, res: Response) {
     const { data, status }: ResponseData =
-      await groupProductService.softDeleteGroupProduct(parseInt(req.params.id));
+      await groupProductService.softDeleteGroupProduct(+req.params.id);
     res.status(status).json(data);
   }
   async restoreGroupProduct(req: Request, res: Response) {
     const { data, status }: ResponseData =
-      await groupProductService.restoreGroupProduct(parseInt(req.params.id));
+      await groupProductService.restoreGroupProduct(+req.params.id);
     res.status(status).json(data);
   }
   async deleteGroupProducts(req: Request, res: Response) {

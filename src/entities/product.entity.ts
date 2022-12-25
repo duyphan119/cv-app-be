@@ -77,6 +77,6 @@ export class Product extends BaseEntity {
   @Column({ name: "hienthi", default: true })
   isVisible: boolean;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ name: "ngayxoa" })
   deletedAt?: Date;
 }

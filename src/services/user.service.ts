@@ -8,7 +8,7 @@ export const getAllUsers = async (
   query: UsersQueryParams
 ): Promise<ResponseData> => {
   try {
-    const { sort_by, sort_type } = query;
+    const { sortBy, sortType } = query;
     const userRepository = AppDataSource.getRepository(User);
 
     const take: number = query.limit ? parseInt(query.limit) : 10;
@@ -16,7 +16,7 @@ export const getAllUsers = async (
 
     const users = await userRepository.find({
       order: {
-        [sort_by || "id"]: sort_type || "desc",
+        [sortBy || "id"]: sortType || "desc",
       },
       take,
       skip,

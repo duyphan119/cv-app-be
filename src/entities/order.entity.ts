@@ -7,6 +7,7 @@ import {
   Entity,
   EntitySubscriberInterface,
   EventSubscriber,
+  InsertEvent,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -15,8 +16,12 @@ import {
   UpdateEvent,
 } from "typeorm";
 import { OrderItem } from "./orderitem.entity";
+import { Product } from "./product.entity";
 import { ProductVariant } from "./productvariant.entity";
 import { User } from "./user.entity";
+import { UserAddress } from "./useraddress.entity";
+import * as userAddressService from "../services/useraddress.service";
+import { OrderDiscount } from "./orderdiscount.entity";
 
 @Entity({ name: "donhang" })
 export class Order extends BaseEntity {
@@ -83,6 +88,14 @@ export class Order extends BaseEntity {
 
   @OneToMany(() => OrderItem, (e) => e.order)
   items: OrderItem[];
+
+  @ManyToOne(() => OrderDiscount, (e) => e.orders)
+  @JoinColumn({ name: "madinhdanh_giamgia", referencedColumnName: "id" })
+  discount: OrderDiscount;
+
+  @Column({ name: "madinhdanh_giamgia", nullable: true })
+  @IsNumber()
+  discountId: number;
 }
 
 @EventSubscriber()
@@ -91,10 +104,32 @@ export class OrderSubscriber implements EntitySubscriberInterface<Order> {
     return Order;
   }
 
+  async afterInsert(event: InsertEvent<Order>): Promise<any> {
+    const { district, province, address, ward, userId, fullName, phone } =
+      event.entity;
+    // Kiểm tra địa chỉ của khách hàng có trong sổ địa chỉ chưa
+    // Nếu không có thì tạo mới
+    const userAddress = await UserAddress.findOneBy({
+      district,
+      province,
+      address,
+      ward,
+      userId,
+    });
+    if (!userAddress) {
+      return userAddressService.createUserAddress(userId, {
+        district,
+        province,
+        address,
+        ward,
+      });
+    }
+  }
+
   async afterUpdate(event: UpdateEvent<Order>): Promise<any> {
     try {
       if (event.entity) {
-        let existingCart = await Order.findOne({
+        let order = await Order.findOne({
           where: {
             id: event.entity.id,
           },
@@ -104,40 +139,89 @@ export class OrderSubscriber implements EntitySubscriberInterface<Order> {
             },
           },
         });
-        if (existingCart) {
-          await Promise.allSettled(
-            existingCart.items.map((item: OrderItem) => {
-              let inventory = item.productVariant.inventory;
-              if (
-                (!event.databaseEntity.status ||
-                  event.databaseEntity.status === "Đang xử lý") &&
-                event.entity &&
-                event.entity.status &&
-                event.entity.status !== "Đang xử lý"
-              ) {
-                inventory -= item.quantity;
-              } else if (
-                event.databaseEntity.status &&
-                event.databaseEntity.status !== "Đang xử lý" &&
-                event.entity &&
-                (event.entity.status || event.entity.status === "Đang xử lý")
-              ) {
-                inventory += item.quantity;
-              }
-              return ProductVariant.update(
-                {
-                  id: item.productVariantId,
-                },
-                {
-                  inventory: inventory,
-                }
-              );
-            })
-          );
+        console.log("NEW: ", event.entity);
+        console.log("updatedColumns: ", event.updatedColumns);
+        // new => event.entity
+        // old => event.databaseEntity
+        if (order) {
+          // const { status: oldStatus } = event.databaseEntity;
+          const {
+            // status: newStatus,
+            district,
+            province,
+            address,
+            ward,
+            userId,
+          } = order;
+
+          // Cập nhật số lượng tồn
+          let promises: Promise<any>[] = [];
+          // let downInventory =
+          //   (!oldStatus || oldStatus === "Đang xử lý") &&
+          //   newStatus &&
+          //   newStatus !== "Đang xử lý"; // Đặt hàng -> giảm tồn kho
+          // let upInventory =
+          //   oldStatus &&
+          //   oldStatus !== "Đang xử lý" &&
+          //   (newStatus || newStatus === "Đang xử lý"); // Hủy đặt hàng -> tăng tồn kho
+
+          // order.items.forEach((item: OrderItem) => {
+          //   // Chi tiết đơn hàng có biến thể
+          //   if (item.productVariant) {
+          //     let inventory = item.productVariant.inventory;
+          //     if (downInventory) {
+          //       inventory -= item.quantity;
+          //     } else if (upInventory) {
+          //       inventory += item.quantity;
+          //     }
+          //     promises.push(
+          //       ProductVariant.update(
+          //         { id: item.productVariantId },
+          //         { inventory: inventory }
+          //       )
+          //     );
+          //   }
+          //   // Chi tiết đơn hàng không có biến thể
+          //   else {
+          //     let inventory = item.product.inventory;
+          //     if (downInventory) {
+          //       inventory -= item.quantity;
+          //     } else if (upInventory) {
+          //       inventory += item.quantity;
+          //     }
+          //     promises.push(
+          //       Product.update({ id: item.productId }, { inventory: inventory })
+          //     );
+          //   }
+          // });
+
+          // Kiểm tra địa chỉ của khách hàng có trong sổ địa chỉ chưa
+          // Nếu không có thì tạo mới
+          const userAddress = await UserAddress.findOneBy({
+            district,
+            province,
+            address,
+            ward,
+            userId,
+          });
+          if (!userAddress) {
+            promises.push(
+              userAddressService.createUserAddress(userId, {
+                district,
+                province,
+                address,
+                ward,
+              })
+            );
+          }
+          console.log("TRIGGER AFTER UPDATE EXECUTE");
+
+          // Chạy promises
+          return Promise.all(promises);
         }
       }
     } catch (error) {
-      console.log(error);
+      console.log("TRIGGER AFTER UPDATE ORDER ERROR", error);
     }
   }
 }

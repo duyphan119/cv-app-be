@@ -4,6 +4,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  EntitySubscriberInterface,
+  EventSubscriber,
+  InsertEvent,
   JoinColumn,
   JoinTable,
   ManyToMany,
@@ -11,11 +14,11 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  UpdateEvent,
 } from "typeorm";
+import * as productVariantService from "../services/productvariant.service";
 import { OrderItem } from "./orderitem.entity";
 import { Product } from "./product.entity";
-import { ProductVariantImage } from "./productvariantimage.entity";
-import { Variant } from "./variant.entity";
 import { VariantValue } from "./variantvalue.entity";
 
 @Entity({ name: "mathangbienthe" })
@@ -27,7 +30,7 @@ export class ProductVariant extends BaseEntity {
   @IsString()
   name: string;
 
-  @Column({ default: 0, name: "solongton" })
+  @Column({ default: 0, name: "soluongton" })
   @IsNumber()
   inventory: number;
 
@@ -55,4 +58,52 @@ export class ProductVariant extends BaseEntity {
 
   @OneToMany(() => OrderItem, (e) => e.order)
   items: OrderItem[];
+}
+@EventSubscriber()
+export class ProductVariantSubscriber
+  implements EntitySubscriberInterface<ProductVariant>
+{
+  listenTo() {
+    return ProductVariant;
+  }
+
+  afterInsert(event: InsertEvent<ProductVariant>): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const productId = event.entity.productId;
+        const totalInventory = await productVariantService.totalInventory(
+          productId
+        );
+        resolve(
+          Product.update({ inventory: totalInventory }, { id: productId })
+        );
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  afterUpdate(event: UpdateEvent<ProductVariant>): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        if (event.entity) {
+          const { productId } = event.entity;
+          if (productId) {
+            const totalInventory = await productVariantService.totalInventory(
+              productId
+            );
+            resolve(
+              Product.update({ inventory: totalInventory }, { id: productId })
+            );
+          }
+        }
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  // afterUpdate(event: UpdateEvent<ProductVariant>): Promise<any> {
+
+  // }
 }

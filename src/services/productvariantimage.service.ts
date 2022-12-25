@@ -15,15 +15,14 @@ export const getAllProductVariantImages = async (
   query: ProductVariantImageQueryParams
 ): Promise<ResponseData> => {
   try {
-    const { sort_by, sort_type, productId } = query;
+    const { sortBy, sortType, productId } = query;
 
-    const take: number = query.limit ? parseInt(query.limit) : -1;
-    const skip: number =
-      take !== -1 && query.p ? (parseInt(query.p) - 1) * take : -1;
+    const take: number = query.limit ? +query.limit : -1;
+    const skip: number = take !== -1 && query.p ? (+query.p - 1) * take : -1;
 
     const variants = await ProductVariantImage.find({
       order: {
-        [sort_by || "id"]: sort_type || "desc",
+        [sortBy || "id"]: sortType || "desc",
       },
       where: {
         ...(productId ? { productId: +productId } : {}),

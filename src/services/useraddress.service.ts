@@ -1,10 +1,9 @@
-import { STATUS_CREATED, STATUS_OK } from "../constants";
+import { STATUS_CREATED, STATUS_OK, STATUS_UNAUTH } from "../constants";
 import { UserAddress } from "../entities/useraddress.entity";
 import { handleError, handleItem, handleItems } from "../utils";
 import { PaginationParams, ResponseData } from "../utils/types";
 
 export type CreateUserAddressDTO = {
-  userId: number;
   province: string;
   district: string;
   ward: string;
@@ -16,9 +15,8 @@ export const getByUserId = async (
   query: PaginationParams
 ): Promise<ResponseData> => {
   try {
-    const take: number = query.limit ? parseInt(query.limit) : -1;
-    const skip: number =
-      take !== -1 && query.p ? (parseInt(query.p) - 1) * take : -1;
+    const take: number = query.limit ? +query.limit : -1;
+    const skip: number = take !== -1 && query.p ? (+query.p - 1) * take : -1;
     const [userAddresses, count] = await UserAddress.findAndCount({
       where: { userId },
       ...(take !== -1 ? { take } : {}),
@@ -31,12 +29,15 @@ export const getByUserId = async (
 };
 
 export const createUserAddress = async (
+  userId: number,
   body: CreateUserAddressDTO
 ): Promise<ResponseData> => {
   try {
-    let userAddress = await UserAddress.save(
-      Object.assign(new UserAddress(), body)
+    console.log(
+      Object.assign(new UserAddress(), Object.assign(body, { userId }))
     );
+    let userAddress = await UserAddress.save({ ...body, userId });
+    console.log(userAddress);
     return handleItem(STATUS_CREATED, userAddress);
   } catch (error) {
     return handleError(error);
@@ -45,23 +46,32 @@ export const createUserAddress = async (
 
 export const updateUserAddress = async (
   id: number,
+  userId: number,
   body: Partial<CreateUserAddressDTO>
 ): Promise<ResponseData> => {
   try {
-    let userAddress = await UserAddress.findOneBy({ id });
+    let userAddress = await UserAddress.findOneBy({ id, userId });
     if (userAddress) {
       userAddress = await UserAddress.save(Object.assign(userAddress, body));
+      return handleItem(STATUS_OK, userAddress);
     }
-    return handleItem(STATUS_OK, userAddress);
+    return handleItem(STATUS_UNAUTH);
   } catch (error) {
     return handleError(error);
   }
 };
 
-export const deleteUserAddress = async (id: number): Promise<ResponseData> => {
+export const deleteUserAddress = async (
+  id: number,
+  userId: number
+): Promise<ResponseData> => {
   try {
-    await UserAddress.delete({ id });
-    return handleItem(STATUS_OK);
+    let userAddress = await UserAddress.findOneBy({ id, userId });
+    if (userAddress) {
+      await UserAddress.delete({ id: userAddress.id });
+      return handleItem(STATUS_OK);
+    }
+    return handleItem(STATUS_UNAUTH);
   } catch (error) {
     return handleError(error);
   }

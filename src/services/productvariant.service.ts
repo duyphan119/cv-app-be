@@ -18,12 +18,12 @@ export const getAllProductVariants = async (
   query: ProductVariantQueryParams
 ): Promise<ResponseData> => {
   try {
-    const { productId, sort_by, sort_type, limit, p, variant_values } = query;
+    const { productId, sortBy, sortType, limit, p, variant_values } = query;
     const take: number = limit ? parseInt(limit) : -1;
     const skip: number = take !== -1 && p ? (parseInt(p) - 1) * take : -1;
     const [productVariants, count] = await ProductVariant.findAndCount({
       order: {
-        [sort_by || "id"]: sort_type || "desc",
+        [sortBy || "id"]: sortType || "desc",
       },
       where: {
         ...(productId ? { productId: +productId } : {}),
@@ -121,4 +121,19 @@ export const deleteProductVariants = async (
   } catch (error) {
     return handleError(error);
   }
+};
+
+export const totalInventory = async (productId: number): Promise<any> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const [res] = await ProductVariant.createQueryBuilder("mhbt")
+        .groupBy("mhbt.mahang")
+        .select("sum(mhbt.soluongton)", "total")
+        .where("mhbt.mahang = :productId", { productId })
+        .execute();
+      resolve(res ? res.total : 0);
+    } catch (error) {
+      resolve(0);
+    }
+  });
 };

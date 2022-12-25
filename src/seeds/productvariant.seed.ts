@@ -5,17 +5,9 @@ import { Variant } from "../entities/variant.entity";
 
 export const productVariantSeed = async () => {
   const repository = AppDataSource.getRepository(ProductVariant);
-  const varaintRepository = AppDataSource.getRepository(Variant);
 
   const list = await repository.find();
-  // await AppDataSource.createQueryBuilder()
-  //   .update(Product)
-  //   .set({
-  //     thumbnail:
-  //       "https://scontent.fsgn8-2.fna.fbcdn.net/v/t39.30808-6/308161063_394177769577123_3560558019291503964_n.jpg?stp=cp6_dst-jpg&_nc_cat=100&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=Jg23nplMT6UAX_FtUsO&_nc_ht=scontent.fsgn8-2.fna&oh=00_AfCO_p3J98bV4ed3z2-B7GSWNAL-ECERQXTQt2d8v8exLQ&oe=637F26D5",
-  //   })
-  //   .execute();
-  // AppDataSource.createQueryBuilder()
+
   const trang = await VariantValue.findOne({ where: { value: "Trắng" } });
   const den = await VariantValue.findOne({
     where: { value: "Đen" },

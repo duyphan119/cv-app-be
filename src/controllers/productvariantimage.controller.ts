@@ -28,7 +28,7 @@ class ProductVariantImageController {
   async updateProductVariantImage(req: Request, res: Response) {
     const { data, status }: ResponseData =
       await productVariantImageService.updateProductVariantImage(
-        parseInt(req.params.id),
+        +req.params.id,
         req.body.variantValueId
       );
     res.status(status).json(data);
@@ -36,7 +36,7 @@ class ProductVariantImageController {
   async deleteProductVariantImage(req: Request, res: Response) {
     const { data, status }: ResponseData =
       await productVariantImageService.deleteProductVariantImage(
-        parseInt(req.params.id)
+        +req.params.id
       );
     res.status(status).json(data);
   }

@@ -10,7 +10,7 @@ class VariantValueController {
   }
   async getVariantValueById(req: Request, res: Response) {
     const { data, status }: ResponseData =
-      await variantValueService.getVariantValueById(parseInt(req.params.id));
+      await variantValueService.getVariantValueById(+req.params.id);
     res.status(status).json(data);
   }
   async createVariantValue(req: Request, res: Response) {
@@ -25,15 +25,12 @@ class VariantValueController {
   }
   async updateVariantValue(req: Request, res: Response) {
     const { data, status }: ResponseData =
-      await variantValueService.updateVariantValue(
-        parseInt(req.params.id),
-        req.body
-      );
+      await variantValueService.updateVariantValue(+req.params.id, req.body);
     res.status(status).json(data);
   }
   async deleteVariantValue(req: Request, res: Response) {
     const { data, status }: ResponseData =
-      await variantValueService.deleteVariantValue(parseInt(req.params.id));
+      await variantValueService.deleteVariantValue(+req.params.id);
     res.status(status).json(data);
   }
   async deleteVariantValues(req: Request, res: Response) {

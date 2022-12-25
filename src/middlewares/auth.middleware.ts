@@ -28,7 +28,6 @@ export const requireLogin: any = (
   next: NextFunction
 ) => {
   const reqHeader = req.headers["authorization"];
-  console.log(reqHeader);
   if (reqHeader) {
     const accessToken = reqHeader.split(" ")[1];
     if (accessToken) {

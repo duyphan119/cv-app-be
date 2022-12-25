@@ -11,14 +11,14 @@ class UserController {
   }
   async getUserById(req: Request, res: Response) {
     const { data, status }: ResponseData = await userService.getUserById(
-      parseInt(req.params.id)
+      +req.params.id
     );
     res.status(status).json(data);
   }
 
   async deleteUser(req: Request, res: Response) {
     const { data, status }: ResponseData = await userService.deleteUser(
-      parseInt(req.params.id)
+      +req.params.id
     );
     res.status(status).json(data);
   }
