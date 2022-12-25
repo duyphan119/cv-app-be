@@ -24,7 +24,7 @@ export const AppDataSource = new DataSource({
         database: "cv-app",
         synchronize: true,
       }),
-  logging: false,
+  logging: true,
   entities,
   subscribers,
   migrations: [path.join(__dirname, "/migrations/*")],
