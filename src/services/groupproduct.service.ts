@@ -24,8 +24,8 @@ export const getAllGroupProducts = async (
       order: {
         [sortBy || "id"]: sortType || "desc",
       },
-      withDeleted: withDeleted ? true : false,
       where: { ...(name ? { name } : {}), ...(slug ? { slug } : {}) },
+      withDeleted: withDeleted ? true : false,
       ...(take !== -1 ? { take } : {}),
       ...(skip !== -1 ? { skip } : {}),
     });

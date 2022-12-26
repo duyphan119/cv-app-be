@@ -1,3 +1,4 @@
+import { Blog } from "./blog.entity";
 import { Category } from "./category.entity";
 import { FavoriteProduct } from "./favoriteproduct.entity";
 import { GroupProduct } from "./groupproduct.entity";
@@ -26,6 +27,7 @@ const entities = [
   VariantValue,
   UserAddress,
   OrderDiscount,
+  Blog,
 ];
 
 export const subscribers = [OrderItemSubscriber, OrderSubscriber];

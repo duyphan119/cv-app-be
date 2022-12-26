@@ -8,14 +8,7 @@ import "reflect-metadata";
 import { __prod__ } from "./constants";
 import { AppDataSource } from "./data-source";
 import routes from "./routes";
-import { groupProductSeed } from "./seeds/groupproduct.seed";
-import { orderDiscountSeed } from "./seeds/orderdiscount.seed";
-import { productSeed } from "./seeds/product.seed";
-import { productVariantSeed } from "./seeds/productvariant.seed";
-import { productVariantImageSeed } from "./seeds/productvariantimage.seed";
-import { userSeed } from "./seeds/user.seed";
-import { variantSeed } from "./seeds/variant.seed";
-import { variantValueSeed } from "./seeds/variantvalue.seed";
+import seed from "./seeds";
 let PORT = "8080";
 if (process.env.PORT) {
   PORT = process.env.PORT;
@@ -32,21 +25,12 @@ AppDataSource.initialize()
     app.use(express.static(path.join(__dirname, "../")));
     app.use(
       cors({
-        origin: __prod__
-          ? process.env.CORS_ORIGIN_PROD
-          : process.env.CORS_ORIGIN_DEV,
+        origin: true,
         credentials: true,
       })
     );
 
-    await userSeed();
-    await variantSeed();
-    await variantValueSeed();
-    await groupProductSeed();
-    await productSeed();
-    await productVariantSeed();
-    await productVariantImageSeed();
-    await orderDiscountSeed();
+    seed();
 
     app.use(routes);
     app.listen(PORT, () => console.log(`Server is running on port: ${PORT}`));

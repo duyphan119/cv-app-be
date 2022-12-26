@@ -13,10 +13,13 @@ export const getUser: any = (
       try {
         const user = jwt.verify(
           accessToken,
-          process.env.ACCESS_TOKEN_SECRET || "super-secret"
+          process.env.AT_SECRET || "super-secret"
         );
+        console.log(user);
         res.locals.user = user || null;
-      } catch (error) {}
+      } catch (error) {
+        console.log("ERROR", error);
+      }
     }
   }
   next();

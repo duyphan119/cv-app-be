@@ -11,6 +11,7 @@ import variantValueRouter from "./variantvalue.router";
 import productVariantRouter from "./productvariant.router";
 import userAddessRouter from "./useraddress.router";
 import orderDiscountRouter from "./orderdiscount.router";
+import blogRouter from "./blog.router";
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use("/product-variant-image", productVariantImageRouter);
 router.use("/product-variant", productVariantRouter);
 router.use("/user-address", userAddessRouter);
 router.use("/order-discount", orderDiscountRouter);
+router.use("/blog", blogRouter);
 
 export default router;
